@@ -3,6 +3,7 @@ package mygame;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.app.SimpleApplication;
+import com.jme3.app.state.AppState;
 import com.jme3.audio.AudioNode;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.collision.CollisionResults;
@@ -10,12 +11,14 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.Trigger;
 import com.jme3.light.DirectionalLight;
+import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.system.AppSettings;
 import com.jme3.util.SkyFactory;
 import java.util.ArrayList;
 import java.util.Random;
@@ -26,79 +29,44 @@ import java.util.Random;
  */
 public class HelloAnimation extends SimpleApplication {
 
-    Node player;
-    Oto oto;
-    WorldSphere worldSphere;
-    Obstacle obstacle;
+   static Material matRed, matGreen, matBlue, matOrange, matTransparent;
     Spatial sky;
-    Random random = new Random();
-    static final int NUM_OBSTACLES = 100;
-    Obstacle obstacleHolder[] = new Obstacle[NUM_OBSTACLES];
     private AnimChannel channel;
     private AnimControl control;
-    
-    
-    float xPosition;
     AudioNode audioNode;
-    int count = 0;
     
     public static void main(String[] args) {
+        AppSettings settings = new AppSettings(true);
+        settings.setResolution(1024, 768);
+        settings.setVSync(true);
         HelloAnimation app = new HelloAnimation();
+        app.setShowSettings(false);
+        app.setSettings(settings);
         app.start();
+    }
+    
+    public AppSettings getSettings() {
+        return (settings);
     }
 
     @Override
     public void simpleInitApp() {
         setDisplayFps(false);
         setDisplayStatView(false);
-
-        // camera settings
-        flyCam.setEnabled(false);
-        flyCam.setMoveSpeed(80f);
-        cam.setLocation(new Vector3f(0f, 13f, 15f));
-        cam.lookAt(new Vector3f(0, 5f, 0), Vector3f.UNIT_Y);
-
-        /**
-         * Add a light source so we can see the model
-         */
-        DirectionalLight dl = new DirectionalLight();
-        dl.setDirection(new Vector3f(-0.1f, -1f, -1).normalizeLocal());
-        rootNode.addLight(dl);
-
-
-        // create the worldsphere for us to run on.
-        worldSphere = new WorldSphere(this);
-
-        // add the obstacles
-        addObstacles();
-
-        // create oto and set his ground speed.
-        oto = new Oto(this, obstacleHolder);
-        oto.setGroundSpeed(1.5f);
+        initCam();
+        initLights();
         initPostProcessing();
         initAudio();
+        
+        // start the game yo.
+        StartScreen s = new StartScreen();
+        stateManager.attach(s);
     }
-
-    /* should pass this in to oto controller so we can consistently 
-     * update the postion of the obstacles */
-    public void addObstacles() {
-        for (int i = 0; i < NUM_OBSTACLES; i++) {
-            obstacle = new Obstacle(this);
-            obstacleHolder[i] = obstacle;
-            // i don't even know why this works
-            float angle = FastMath.PI / FastMath.nextRandomFloat() * 360;
-            float yPosition = 200f * FastMath.cos(angle);
-            float zPosition = 200f * FastMath.sin(angle);
-            // So we can populate the left and right sides of our bounded area
-            if (i % 2 == 0) {
-                xPosition = 4.5f * random.nextFloat();
-            } else {
-                xPosition = 4.5f * -random.nextFloat();
-            }
-            obstacleHolder[i].obstacleGeom.setLocalTranslation(xPosition, yPosition, zPosition);
-            worldSphere.spinner.attachChild(obstacleHolder[i].obstacleGeom);
-//       worldSphere.spinner.rotate(100f, 0, 0);
-        }
+    
+    protected static void clearJMonkey(HelloAnimation a) {
+        a.guiNode.detachAllChildren();
+        a.rootNode.detachAllChildren();
+        a.inputManager.clearMappings();
     }
 
     private void initPostProcessing() {
@@ -120,4 +88,55 @@ public class HelloAnimation extends SimpleApplication {
         audioNode.play();
 
     }
+    
+    public void initCam() {
+        flyCam.setEnabled(false);
+        flyCam.setMoveSpeed(80f);
+        cam.setLocation(new Vector3f(0f, 13f, 15f));
+        cam.lookAt(new Vector3f(0, 5f, 0), Vector3f.UNIT_Y);
+    }
+    
+    public void initLights() {
+        // Light source added so we can see the model.
+        DirectionalLight dl = new DirectionalLight();
+        dl.setDirection(new Vector3f(-0.1f, -1f, -1).normalizeLocal());
+        rootNode.addLight(dl);
+    }
+    public void initMaterials() {
+        matRed = new Material(assetManager,
+                "Common/MatDefs/Misc/Unshaded.j3md");
+        matRed.setColor("Color", ColorRGBA.Orange);
+        matRed = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        matRed.setBoolean("UseMaterialColors", true);
+        matRed.setColor("Ambient", new ColorRGBA(0.3f, 0.3f, 0.3f, 1.0f));
+        matRed.setColor("Diffuse", ColorRGBA.Red);
+        matRed.setTexture("DiffuseMap", assetManager.loadTexture("Textures/texture1.png"));
+
+        matGreen = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        matGreen.setBoolean("UseMaterialColors", true);
+        matGreen.setColor("Ambient", new ColorRGBA(0.3f, 0.3f, 0.3f, 1.0f));
+        matGreen.setColor("Diffuse", ColorRGBA.Green);
+        matGreen.setColor("Specular", ColorRGBA.Orange);
+        matGreen.setFloat("Shininess", 2f); // shininess from 1-128
+        matGreen.setTexture("DiffuseMap", assetManager.loadTexture("Textures/texture1.png"));
+
+        matBlue = new Material(assetManager,
+                "Common/MatDefs/Misc/Unshaded.j3md");
+        matBlue.setColor("Color", ColorRGBA.Orange);
+        matBlue = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        matBlue.setBoolean("UseMaterialColors", true);
+        matBlue.setColor("Ambient", new ColorRGBA(0.6f, 0.6f, 0.6f, 1.0f));
+        matBlue.setColor("Diffuse", ColorRGBA.Blue);
+        matBlue.setTexture("DiffuseMap", assetManager.loadTexture("Textures/texture1.png"));
+
+        matOrange = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        matOrange.setBoolean("UseMaterialColors", true);
+        matOrange.setColor("Ambient", new ColorRGBA(0.3f, 0.3f, 0.3f, 1.0f));
+        matOrange.setColor("Diffuse", ColorRGBA.Orange);
+        matOrange.setColor("Specular", ColorRGBA.Orange);
+        matOrange.setFloat("Shininess", 2f); // shininess from 1-128
+        matOrange.setTexture("DiffuseMap", assetManager.loadTexture("Textures/texture1.png"));
+    }
+    
+    
 }
