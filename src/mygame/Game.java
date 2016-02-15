@@ -10,6 +10,10 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.font.BitmapText;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
+import com.jme3.util.SkyFactory;
 import java.util.Random;
 
 /**
@@ -32,6 +36,7 @@ public class Game extends AbstractAppState implements ActionListener {
     Oto oto;
     WorldSphere worldSphere;
     Obstacle obstacle;
+    Spatial sky;
     float gameTime;
     float waitTime;
     float xPosition;
@@ -45,14 +50,29 @@ public class Game extends AbstractAppState implements ActionListener {
         helloAnimation =  (HelloAnimation) app;
         asm = stateManager;
         
+        // Initialize the world, obstacles and oto.
          worldSphere = new WorldSphere(helloAnimation);
         addObstacles();
         oto = new Oto(helloAnimation, obstacleHolder);
         oto.setGroundSpeed(1.5f);
+        
+        gameTime = 0;
+        state = WAIT;
+        waitTime = INITIALWAITTIME;
+        initViews();
     }
 
     public void onAction(String name, boolean isPressed, float tpf) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private void initViews() {
+        helloAnimation.getFlyByCamera().setEnabled(false);
+        helloAnimation.getFlyByCamera().setMoveSpeed(90f);
+        helloAnimation.getCamera().setLocation(new Vector3f(0f, 13f, 15f));
+        helloAnimation.getCamera().lookAt(new Vector3f(0, 5f, 0), Vector3f.UNIT_Y);
+        sky = SkyFactory.createSky(helloAnimation.getAssetManager(), "Textures/sky.JPG", true);
+        helloAnimation.getRootNode().attachChild(sky);
     }
  
   
@@ -75,4 +95,18 @@ public class Game extends AbstractAppState implements ActionListener {
 //       worldSphere.spinner.rotate(100f, 0, 0);
         }
 }
+    
+    public void detachObstacles() {
+        for (int i = 0; i < NUM_OBSTACLES; i++) {
+            worldSphere.spinner.detachChild(obstacleHolder[i].obstacleGeom);
+        }
+    }
+    
+    @Override
+    public void update(float tpf) {
+        
+        addObstacles();
+        detachObstacles();
+        sky.rotate(tpf / 6, 0, 0);
+    }
 }

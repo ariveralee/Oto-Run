@@ -53,9 +53,9 @@ public class HelloAnimation extends SimpleApplication {
     public void simpleInitApp() {
         setDisplayFps(false);
         setDisplayStatView(false);
-        initCam();
+        //initCam();
         initLights();
-        initPostProcessing();
+        //initPostProcessing();
         initAudio();
         
         // start the game yo.
@@ -76,7 +76,7 @@ public class HelloAnimation extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        sky.rotate(tpf / 6, 0, 0);
+        //sky.rotate(tpf / 6, 0, 0);
     }
 
     public void initAudio() {

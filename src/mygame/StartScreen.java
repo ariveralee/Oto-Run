@@ -63,13 +63,13 @@ public class StartScreen extends AbstractAppState implements ActionListener {
         helloAnimation.getGuiNode().attachChild(text);
 
         // set camera location
-        helloAnimation.getFlyByCamera().setEnabled(false);
-        cameraTarget = new Node();
-        CameraNode camNode = new CameraNode("Camera Node", helloAnimation.getCamera());
-        camNode.setLocalTranslation(new Vector3f(0f, 6f, 15f));
-        camNode.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
-        cameraTarget.attachChild(camNode);
-        helloAnimation.getRootNode().attachChild(cameraTarget);
+//        helloAnimation.getFlyByCamera().setEnabled(false);
+//        cameraTarget = new Node();
+//        CameraNode camNode = new CameraNode("Camera Node", helloAnimation.getCamera());
+//        camNode.setLocalTranslation(new Vector3f(0f, 6f, 15f));
+//        camNode.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+//        cameraTarget.attachChild(camNode);
+//        helloAnimation.getRootNode().attachChild(cameraTarget);
 
         // Keys
         InputManager inputManager = helloAnimation.getInputManager();
@@ -109,6 +109,6 @@ public class StartScreen extends AbstractAppState implements ActionListener {
         text.setLocalTranslation(lineX, lineY, 0f);
 
         //
-        cameraTarget.rotate(0, tpf, 0);
+       // cameraTarget.rotate(0, tpf, 0);
     }
 }
