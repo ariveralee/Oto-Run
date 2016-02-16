@@ -53,12 +53,9 @@ public class HelloAnimation extends SimpleApplication {
     public void simpleInitApp() {
         setDisplayFps(false);
         setDisplayStatView(false);
-        //initCam();
         initLights();
-        //initPostProcessing();
         initAudio();
         
-        // start the game yo.
         StartScreen s = new StartScreen();
         stateManager.attach(s);
     }
@@ -69,14 +66,8 @@ public class HelloAnimation extends SimpleApplication {
         a.inputManager.clearMappings();
     }
 
-    private void initPostProcessing() {
-        sky = SkyFactory.createSky(assetManager, "Textures/sky.JPG", true);
-        rootNode.attachChild(sky);
-    }
-
     @Override
     public void simpleUpdate(float tpf) {
-        //sky.rotate(tpf / 6, 0, 0);
     }
 
     public void initAudio() {
@@ -87,13 +78,6 @@ public class HelloAnimation extends SimpleApplication {
         rootNode.attachChild(audioNode);
         audioNode.play();
 
-    }
-    
-    public void initCam() {
-        flyCam.setEnabled(false);
-        flyCam.setMoveSpeed(80f);
-        cam.setLocation(new Vector3f(0f, 13f, 15f));
-        cam.lookAt(new Vector3f(0, 5f, 0), Vector3f.UNIT_Y);
     }
     
     public void initLights() {

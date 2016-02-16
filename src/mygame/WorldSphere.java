@@ -50,7 +50,7 @@ public class WorldSphere extends Node {
 
         @Override
         protected void controlUpdate(float tpf) {
-            spinner.rotate(tpf / 4, 0, 0);
+            //spinner.rotate(tpf / 4, 0, 0);
         }
 
         @Override

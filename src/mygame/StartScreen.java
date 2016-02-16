@@ -93,12 +93,6 @@ public class StartScreen extends AbstractAppState implements ActionListener {
     }
 
     private void initPostProcessing() {
-//        fpp = new FilterPostProcessor(helloAnimation.getAssetManager());
-//        BloomFilter bloom = new BloomFilter();
-//        bloom.setBlurScale(3.0f);
-//        bloom.setBloomIntensity(10.0f);
-//        fpp.addFilter(bloom);
-//        helloAnimation.getViewPort().addProcessor(fpp);
         Spatial sky = SkyFactory.createSky(
                 helloAnimation.getAssetManager(),"Textures/space_background.jpg", true);
         helloAnimation.getRootNode().attachChild(sky);
@@ -106,7 +100,6 @@ public class StartScreen extends AbstractAppState implements ActionListener {
 
     @Override
     public void cleanup() {
-       // helloAnimation.getViewPort().removeProcessor(fpp);
         helloAnimation.clearJMonkey(helloAnimation);
     }
 

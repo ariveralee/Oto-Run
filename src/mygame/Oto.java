@@ -90,7 +90,7 @@ public class Oto {
     private void initModel() {
         otoNode = (Node) sa.getAssetManager().loadModel("Models/Oto/Oto.mesh.xml");
         otoNode.setLocalScale(0.5f);
-        sa.getRootNode().attachChild(otoNode);
+        //dsa.getRootNode().attachChild(otoNode);
 
         // This turns oto in the oppose direction.
         Quaternion q = new Quaternion();
@@ -144,12 +144,10 @@ public class Oto {
                 otoNode.collideWith(bv, results);
 
                 if (results.size() > 0) {
-                     //health -= 5;
+                     health -= 5;
 
                     System.out.println("Here's my health: " + health);
-               if (health <= 0) {
-                      System.exit(0);
-                  }
+               
                     results.clear();
                 }
 
