@@ -96,17 +96,7 @@ public class Game extends AbstractAppState implements ActionListener {
         }
 }
     
-    public void detachObstacles() {
-        for (int i = 0; i < NUM_OBSTACLES; i++) {
-            worldSphere.spinner.detachChild(obstacleHolder[i].obstacleGeom);
-        }
-    }
-    
-    @Override
     public void update(float tpf) {
-        
-        addObstacles();
-        detachObstacles();
         sky.rotate(tpf / 6, 0, 0);
     }
 }
