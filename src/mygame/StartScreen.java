@@ -23,7 +23,7 @@ import com.jme3.util.SkyFactory;
 
 public class StartScreen extends AbstractAppState implements ActionListener {
 
-    BitmapText text;
+    BitmapText text, spaceText;
     private Node cameraTarget;
     HelloAnimation helloAnimation;
     FilterPostProcessor fpp;
@@ -55,12 +55,20 @@ public class StartScreen extends AbstractAppState implements ActionListener {
 
         // Text
         //main.setGuiFont(main.getAssetManager().loadFont("Interface/Fonts/Console.fnt"));
-        BitmapFont bmf = app.getAssetManager().loadFont("Interface/Fonts/Console.fnt");
+        BitmapFont bmf = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
         text = new BitmapText(bmf);
-        text.setSize(bmf.getCharSet().getRenderedSize() * 10);
+        text.setSize(bmf.getCharSet().getRenderedSize() * 7);
         text.setColor(ColorRGBA.Red);
-        text.setText("DODGEBALL");
+        text.setText("OTO-RUN");
         helloAnimation.getGuiNode().attachChild(text);
+        
+        BitmapFont space = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
+        spaceText = new BitmapText(space);
+        spaceText.setSize(space.getCharSet().getRenderedSize() * 3);
+        spaceText.setColor(ColorRGBA.Blue);
+        spaceText.setText("PRESS SPACE TO START");
+        helloAnimation.getGuiNode().attachChild(spaceText);
+        
 
         // set camera location
         helloAnimation.getFlyByCamera().setEnabled(false);
@@ -70,6 +78,7 @@ public class StartScreen extends AbstractAppState implements ActionListener {
         camNode.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
         cameraTarget.attachChild(camNode);
         helloAnimation.getRootNode().attachChild(cameraTarget);
+
 
         // Keys
         InputManager inputManager = helloAnimation.getInputManager();
@@ -84,31 +93,27 @@ public class StartScreen extends AbstractAppState implements ActionListener {
     }
 
     private void initPostProcessing() {
-        fpp = new FilterPostProcessor(helloAnimation.getAssetManager());
-        BloomFilter bloom = new BloomFilter();
-        bloom.setBlurScale(3.0f);
-        bloom.setBloomIntensity(10.0f);
-        fpp.addFilter(bloom);
-        helloAnimation.getViewPort().addProcessor(fpp);
         Spatial sky = SkyFactory.createSky(
-                helloAnimation.getAssetManager(), "Textures/texture1.png", true);
+                helloAnimation.getAssetManager(),"Textures/space_background.jpg", true);
         helloAnimation.getRootNode().attachChild(sky);
     }
 
     @Override
     public void cleanup() {
-        helloAnimation.getViewPort().removeProcessor(fpp);
         helloAnimation.clearJMonkey(helloAnimation);
     }
 
     @Override
     public void update(float tpf) {
         AppSettings s = helloAnimation.getSettings();
-        float lineY = s.getHeight() / 2 + FastMath.rand.nextFloat() * 10 - 5;
-        float lineX = (s.getWidth() - text.getLineWidth()) / 2 + FastMath.rand.nextFloat() * 10 - 5;
-        text.setLocalTranslation(lineX, lineY, 0f);
+       float lineY = s.getHeight() / 1.5f;
+       float lineX = (s.getWidth() - text.getLineWidth()) / 2 ;
+       text.setLocalTranslation(lineX, lineY, 0f);
+       
+       float spaceLineY = s.getHeight() / 2.5f;
+       float spaceLineX = (s.getWidth() - spaceText.getLineWidth() / .71f);
+       spaceText.setLocalTranslation(spaceLineX, spaceLineY, tpf);
 
-        //
-        cameraTarget.rotate(0, tpf, 0);
+       cameraTarget.rotate(0, 0, tpf/2);
     }
 }

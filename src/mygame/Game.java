@@ -7,9 +7,19 @@ package mygame;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
+import com.jme3.input.InputManager;
+import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
+import com.jme3.system.AppSettings;
+import com.jme3.util.SkyFactory;
 import java.util.Random;
 
 /**
@@ -28,31 +38,103 @@ public class Game extends AbstractAppState implements ActionListener {
     HelloAnimation helloAnimation;
     
     AppStateManager asm;
-    BitmapText scoreText, waitText, pauseText;
+    BitmapText scoreText; 
+    BitmapText       waitText;
+    BitmapText pauseText;
     Oto oto;
     WorldSphere worldSphere;
     Obstacle obstacle;
+    Spatial sky;
     float gameTime;
+    float score;
     float waitTime;
     float xPosition;
     Random random = new Random();
     boolean waitTextVisible = false;
-
     
+
+    protected Game() {
+        
+    }
     
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         helloAnimation =  (HelloAnimation) app;
         asm = stateManager;
         
+        // Initialize the world, obstacles and oto.
          worldSphere = new WorldSphere(helloAnimation);
         addObstacles();
         oto = new Oto(helloAnimation, obstacleHolder);
-        oto.setGroundSpeed(1.5f);
+        helloAnimation.getRootNode().attachChild(oto.otoNode);
+        
+        gameTime = 0;
+        state = WAIT;
+        waitTime = INITIALWAITTIME;
+        
+        // stuff for pause menu
+        /* stuff for paused */
+    BitmapFont bmf = helloAnimation.getAssetManager().loadFont("Interface/Fonts/Console.fnt");
+        scoreText = new BitmapText(bmf);
+        scoreText.setSize(bmf.getCharSet().getRenderedSize() * 2);
+        scoreText.setColor(ColorRGBA.Black);
+        scoreText.setText("");
+        scoreText.setLocalTranslation(20, 20, 0f);
+        helloAnimation.getGuiNode().attachChild(scoreText);
+        waitText = new BitmapText(bmf);
+        waitText.setSize(bmf.getCharSet().getRenderedSize() * 10);
+        waitText.setColor(ColorRGBA.White);
+        waitText.setText("");
+        AppSettings s = helloAnimation.getSettings();
+        float lineY = s.getHeight() / 2;
+        float lineX = (s.getWidth() - waitText.getLineWidth()) / 2;
+        waitText.setLocalTranslation(lineX, lineY, 0f);
+        pauseText = new BitmapText(bmf);
+        pauseText.setSize(bmf.getCharSet().getRenderedSize() * 10);
+        pauseText.setColor(ColorRGBA.White);
+        pauseText.setText("PAUSED");
+        lineY = s.getHeight() / 2;
+        lineX = (s.getWidth() - pauseText.getLineWidth()) / 2;
+        pauseText.setLocalTranslation(lineX, lineY, 0f);
+
+        
+        // keys
+        InputManager inputManager = helloAnimation.getInputManager();
+        inputManager.addMapping("Pause", new KeyTrigger(KeyInput.KEY_P));
+        inputManager.addMapping("Quit", new KeyTrigger(KeyInput.KEY_Q));
+        inputManager.addListener(this, "Pause", "Quit");
+
+        
+        initViews();
     }
 
     public void onAction(String name, boolean isPressed, float tpf) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (isPressed) {
+            if (name.equals("Pause")) {
+                if (state == PAUSE) {
+                    state = stateMemory;
+                    helloAnimation.getGuiNode().detachChild(pauseText);
+                } else {
+                    stateMemory = state;
+                    state = PAUSE;
+                    helloAnimation.getGuiNode().attachChild(pauseText);
+                }
+            }
+            if (name.equals("Quit")) {
+                StartScreen s = new StartScreen();
+                asm.detach(this);
+                asm.attach(s);
+            }
+        }
+    }
+    
+    private void initViews() {
+        helloAnimation.getFlyByCamera().setEnabled(false);
+        helloAnimation.getFlyByCamera().setMoveSpeed(90f);
+        helloAnimation.getCamera().setLocation(new Vector3f(0f, 13f, 15f));
+        helloAnimation.getCamera().lookAt(new Vector3f(0, 5f, 0), Vector3f.UNIT_Y);
+        sky = SkyFactory.createSky(helloAnimation.getAssetManager(), "Textures/sky.JPG", true);
+        helloAnimation.getRootNode().attachChild(sky);
     }
  
   
@@ -75,4 +157,71 @@ public class Game extends AbstractAppState implements ActionListener {
 //       worldSphere.spinner.rotate(100f, 0, 0);
         }
 }
+    @Override
+    public void update(float tpf) {
+        
+        switch (state) {
+            case WAIT:
+                if (!waitTextVisible) {
+                    waitTextVisible = true;
+                    helloAnimation.getGuiNode().attachChild(waitText);
+                }
+                waitTime -= tpf;
+                if (waitTime <= 0f) {
+                    state = RUN;
+                    if (waitTextVisible) {
+                        waitTextVisible = false;
+                        helloAnimation.getGuiNode().detachChild(waitText);
+                    }
+                } else {
+                    waitText.setText("" + ((int) waitTime + 1));
+                }
+                break;
+            case RUN:
+                worldSphere.spinner.rotate(tpf/8f, 0f, 0f);
+                if (gameTime > 20f) 
+                        worldSphere.spinner.rotate(tpf/7f, 0f, 0f);
+                
+                if (gameTime > 40f) 
+                        worldSphere.spinner.rotate(tpf/9f, 0f, 0f);
+                
+                if (gameTime > 60f)
+                    worldSphere.spinner.rotate(tpf/10f, 0f, 0f);
+                
+                if (gameTime > 80f)
+                    worldSphere.spinner.rotate(tpf/11f, 0f, 0f);
+                
+                if (gameTime > 100f)
+                    worldSphere.spinner.rotate(tpf/12f, 0f, 0f);
+                
+              if (gameTime > 125f)
+                    worldSphere.spinner.rotate(tpf/13f, 0f, 0f);
+              
+               if (gameTime > 160f)
+                    worldSphere.spinner.rotate(tpf/14f, 0f, 0f);
+                 
+               oto.setGroundSpeed(1.5f);
+                 sky.rotate(tpf / 6, 0, 0);
+                 oto.checkCollision();
+                 
+                if (oto.health <= 0) {
+                    endGame();
+                }
+                break;
+            case PAUSE:
+                oto.setGroundSpeed(0f);
+                break;
+        }
+        gameTime += tpf;
+   }
+    // Transition to EndScreen!
+    private void endGame() {
+        EndScreen end = new EndScreen();
+        score = (115 * gameTime);
+        double[] dummy = {score, gameTime};
+        end.setStats(dummy);
+        oto.setGroundSpeed(0f);
+        asm.detach(this);
+        asm.attach(end);
+    }
 }
