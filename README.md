@@ -5,12 +5,12 @@ There's one small problem however, there's obstacles in his path. The current ve
 
 
 <h2> Controls </h2>
-<li>
-  <ul> <b> A </b>to move left</ul>
-  <ul> <b> D </b>to move right</ul>
-  <ul> <b> SPACE </b>to jump</ul>
-  <ul> <b> Q </b>to quit to start screen</ul>
-  <ul> <b> P </b>to pause</ul>
-  <ul> <b> R </b> to replay if you reach the end of the game</ul>
-</li>
+<ul>
+  <li> <b> A </b>to move left</li><br>
+  <li> <b> D </b>to move right</li><br>
+  <li> <b> SPACE </b>to jump</li><br>
+  <li> <b> Q </b>to quit to start screen</li><br>
+  <li> <b> P </b>to pause</li><br>
+  <li> <b> R </b> to replay if you reach the end of the game</li><br>
+</ul>
 <p> <b>You can try the game by downloading it from <a href="https://www.dropbox.com/s/ohsg6moh2jzloi1/Oto-Run.zip?dl=0" target="_blank">here</a></b></p>
