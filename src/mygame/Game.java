@@ -39,13 +39,14 @@ public class Game extends AbstractAppState implements ActionListener {
     
     AppStateManager asm;
     BitmapText scoreText; 
-     BitmapText       waitText;
-     BitmapText pauseText;
+    BitmapText       waitText;
+    BitmapText pauseText;
     Oto oto;
     WorldSphere worldSphere;
     Obstacle obstacle;
     Spatial sky;
     float gameTime;
+    float score;
     float waitTime;
     float xPosition;
     Random random = new Random();
@@ -113,13 +114,10 @@ public class Game extends AbstractAppState implements ActionListener {
                 if (state == PAUSE) {
                     state = stateMemory;
                     helloAnimation.getGuiNode().detachChild(pauseText);
-                    
-                    
                 } else {
                     stateMemory = state;
                     state = PAUSE;
                     helloAnimation.getGuiNode().attachChild(pauseText);
-                    
                 }
             }
             if (name.equals("Quit")) {
@@ -162,7 +160,6 @@ public class Game extends AbstractAppState implements ActionListener {
     @Override
     public void update(float tpf) {
         
-        
         switch (state) {
             case WAIT:
                 if (!waitTextVisible) {
@@ -181,9 +178,32 @@ public class Game extends AbstractAppState implements ActionListener {
                 }
                 break;
             case RUN:
-                worldSphere.spinner.rotate(tpf/4, 0f, 0f);
-                 oto.setGroundSpeed(1.5f);
+                worldSphere.spinner.rotate(tpf/8f, 0f, 0f);
+                if (gameTime > 20f) 
+                        worldSphere.spinner.rotate(tpf/7f, 0f, 0f);
+                
+                if (gameTime > 40f) 
+                        worldSphere.spinner.rotate(tpf/9f, 0f, 0f);
+                
+                if (gameTime > 60f)
+                    worldSphere.spinner.rotate(tpf/10f, 0f, 0f);
+                
+                if (gameTime > 80f)
+                    worldSphere.spinner.rotate(tpf/11f, 0f, 0f);
+                
+                if (gameTime > 100f)
+                    worldSphere.spinner.rotate(tpf/12f, 0f, 0f);
+                
+              if (gameTime > 125f)
+                    worldSphere.spinner.rotate(tpf/13f, 0f, 0f);
+              
+               if (gameTime > 160f)
+                    worldSphere.spinner.rotate(tpf/14f, 0f, 0f);
+                 
+               oto.setGroundSpeed(1.5f);
                  sky.rotate(tpf / 6, 0, 0);
+                 oto.checkCollision();
+                 
                 if (oto.health <= 0) {
                     endGame();
                 }
@@ -192,9 +212,16 @@ public class Game extends AbstractAppState implements ActionListener {
                 oto.setGroundSpeed(0f);
                 break;
         }
-    }
-    
+        gameTime += tpf;
+   }
+    // Transition to EndScreen!
     private void endGame() {
-        System.exit(0);
+        EndScreen end = new EndScreen();
+        score = (115 * gameTime);
+        double[] dummy = {score, gameTime};
+        end.setStats(dummy);
+        oto.setGroundSpeed(0f);
+        asm.detach(this);
+        asm.attach(end);
     }
 }

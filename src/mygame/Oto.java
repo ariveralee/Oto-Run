@@ -3,6 +3,7 @@ package mygame;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.app.SimpleApplication;
+import com.jme3.audio.AudioNode;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -25,7 +26,7 @@ import com.jme3.scene.control.Control;
  *
  * @author Rolf
  */
-public class Oto {
+public class Oto extends Node{
 
     SimpleApplication sa;
     private AnimChannel channel;
@@ -36,7 +37,8 @@ public class Oto {
     float speed = 10f;
     Obstacle obstacles[];
     private float groundSpeed = 0.0f;
-    int health = 100;
+    int health = 200;
+    AudioNode audioNode;
     //
     // -------------------------------------------------------------------------
     // the key action listener: set requested state
@@ -63,6 +65,7 @@ public class Oto {
         this.obstacles = obstacles;
         initKeys();
         initModel();
+        initAudio();
     }
 
     // -------------------------------------------------------------------------  
@@ -108,6 +111,14 @@ public class Oto {
 
 
     }
+    
+    private void initAudio() {
+        audioNode = new AudioNode(sa.getAssetManager(), "Sounds/hit.wav", false);
+        audioNode.setPositional(false);
+        audioNode.setLooping(true);
+        audioNode.setVolume(4f);
+        sa.getRootNode().attachChild(audioNode);
+    }
 
     // -------------------------------------------------------------------------
     // OtoControl
@@ -137,21 +148,6 @@ public class Oto {
                 groundSpeed = groundSpeed > 0 ? 0 : 1.0f;
             }
 
-            // let's get that collision yo.
-            CollisionResults results = new CollisionResults();
-            for (Obstacle o : obstacles) {
-                BoundingVolume bv = o.obstacleGeom.getWorldBound();
-                otoNode.collideWith(bv, results);
-
-                if (results.size() > 0) {
-                     health -= 5;
-
-                    System.out.println("Here's my health: " + health);
-               
-                    results.clear();
-                }
-
-            }
             // Exit if we lose too much. 
 
             // ----------------------------------------
@@ -219,5 +215,21 @@ public class Oto {
             this.state = state;
             stateTime = 0.0f;
         }
+    
+    }
+public void checkCollision() {
+    // let's get that collision yo.
+            CollisionResults results = new CollisionResults();
+            for (Obstacle o : obstacles) {
+                BoundingVolume bv = o.obstacleGeom.getWorldBound();
+                otoNode.collideWith(bv, results);
+
+                if (results.size() > 0) {
+                    health -= 5;
+                    results.clear();
+                }
+           
+
+            }
     }
 }
