@@ -4,7 +4,7 @@
 There's one small problem however, there's obstacles in his path. The current version works and will be updated as I get the time. <b>Please make sure to take a look at the controls below</b>. It will save you a few strands of hair. </p> 
 
 
-<h2> Controls
+<h2> Controls </h2>
 <li>
   <ul> <b> A </b>to move left</ul>
   <ul> <b> D </b>to move right</ul>
