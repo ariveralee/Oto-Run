@@ -49,7 +49,7 @@ public class EndScreen extends AbstractAppState implements ActionListener {
         statsText = new BitmapText(bmf);
         statsText.setSize(bmf.getCharSet().getRenderedSize() * 3);
         statsText.setColor(ColorRGBA.Yellow);
-        String s = String.format("Score: %d \tDistance: %3.1f", (int) stats[0], stats[1]);
+        String s = String.format("Score: %d \tDistance: %3.1f Meters", (int) stats[0], stats[1]);
         statsText.setText(s);
         helloAnimation.getGuiNode().attachChild(statsText);
 
