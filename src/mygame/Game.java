@@ -18,6 +18,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.Spatial.CullHint;
 import com.jme3.system.AppSettings;
 import com.jme3.util.SkyFactory;
 import java.util.Random;
@@ -205,6 +206,8 @@ public class Game extends AbstractAppState implements ActionListener {
                  oto.checkCollision();
                  
                 if (oto.health <= 0) {
+                 SingleBurstParticleEmitter s = new SingleBurstParticleEmitter(helloAnimation, oto.otoNode, oto.otoNode.getLocalTranslation());
+                    oto.otoNode.setCullHint(CullHint.Always);
                     endGame();
                 }
                 break;
